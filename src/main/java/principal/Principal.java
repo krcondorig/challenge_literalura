@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 public class Principal {
     private final Scanner teclado = new Scanner(System.in);
+    private final String URL_BASE = "https://gutendex.com/";
 
     public void mostrarMenu(){
         var opcion = -1;
@@ -37,6 +38,7 @@ public class Principal {
                     System.out.println("Opcion invalida");
             }
         }
+
 
 
     }
