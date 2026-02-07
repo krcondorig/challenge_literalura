@@ -18,15 +18,7 @@ public class LiteraluraApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //Principal principal = new Principal();
-        //principal.mostrarMenu();
-        ConsumoAPI consumoAPI = new ConsumoAPI();
-        String json = consumoAPI.consumoAPI("https://gutendex.com/books");
-        System.out.println("consumo inicial: " + json);
-        System.out.println("entro");
-
-        ConvierteDatos conversor = new ConvierteDatos();
-        var datos = conversor.obtenerDatos(json, DatosResultado.class);
-        System.out.println(datos);
+        Principal principal = new Principal();
+        principal.mostrarMenu();
     }
 }
