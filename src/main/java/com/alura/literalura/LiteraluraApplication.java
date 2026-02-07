@@ -1,10 +1,13 @@
 package com.alura.literalura;
 
+import model.DatosLibro;
+import model.DatosResultado;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import principal.Principal;
 import service.ConsumoAPI;
+import service.ConvierteDatos;
 
 @SpringBootApplication
 public class LiteraluraApplication implements CommandLineRunner {
@@ -19,6 +22,11 @@ public class LiteraluraApplication implements CommandLineRunner {
         //principal.mostrarMenu();
         ConsumoAPI consumoAPI = new ConsumoAPI();
         String json = consumoAPI.consumoAPI("https://gutendex.com/books");
-        System.out.println(json);
+        System.out.println("consumo inicial: " + json);
+        System.out.println("entro");
+
+        ConvierteDatos conversor = new ConvierteDatos();
+        var datos = conversor.obtenerDatos(json, DatosResultado.class);
+        System.out.println(datos);
     }
 }
