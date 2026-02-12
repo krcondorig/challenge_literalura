@@ -1,4 +1,4 @@
-package service;
+package com.alura.literalura.service;
 
 import java.io.IOException;
 import java.net.URI;
