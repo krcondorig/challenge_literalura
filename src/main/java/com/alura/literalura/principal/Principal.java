@@ -6,10 +6,7 @@ import com.alura.literalura.repository.LibroRepository;
 import com.alura.literalura.service.ConsumoAPI;
 import com.alura.literalura.service.ConvierteDatos;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -25,6 +22,9 @@ public class Principal {
     private AutorRepository repositorioAutor;
     private List<Libro> libros;
     private List<Autor> autores;
+    private final String URL_CODIGOS_IDIOMAS = "https://krcondorig.github.io/lenguajes-iso639-1-espaniol-json/lenguajes-iso636-1.json";
+
+
 
     public Principal(LibroRepository repositorioLibro, AutorRepository repositorioAutor){
         this.repositorioLibro = repositorioLibro;
@@ -63,6 +63,10 @@ public class Principal {
                 case 3:
                     listarAutoresRegistrados();
                     break;
+                case 4:
+                    listarAutoresVivosPorAnio();
+                case 5:
+                    listarLibrosPorIdioma();
                 case 0:
                     System.out.println("Cerrando la aplicacion");
                     break;
@@ -121,6 +125,7 @@ public class Principal {
                     System.out.println("Autor encontrado");
                     Libro libro = new Libro(libroBuscado.get());
                     libro.setAutor(autor.get());
+                    repositorioLibro.save(libro); // Guardar el libro en la BD
 
                 } else {
                     System.out.println("Autor no encontrado");
@@ -225,6 +230,72 @@ public class Principal {
             var cuentaAutores = autores.size();
             datosAutor(autores);
             System.out.println("Total de autores registrados: " + cuentaAutores);
+        }
+    }
+
+    private void listarAutoresVivosPorAnio(){
+        try {
+            System.out.println("Ingresa el año");
+            var anio = teclado.nextInt();
+            teclado.nextLine();
+            autores = repositorioAutor.obtenerAutorVivoAnio(anio);
+            var muestraAnioAutor = """
+                *************************************************************
+                    Lista de autores vivos para el año %s en Literalura
+                *************************************************************
+                """;
+            System.out.printf((muestraAnioAutor) + "%n", anio);
+            //System.out.println("\n" + muestraAnioAutor + anio + "\n");
+            if (autores.isEmpty()) {
+                System.out.println("No hay autores vivos para el año registrado");
+            } else {
+                datosAutor(autores);
+                System.out.println("Total de autores registrados: " + autores.size());
+            }
+        }catch (InputMismatchException e){
+            System.out.println("El año ingresado no es valido");
+            teclado.nextLine();
+        }
+    }
+
+    private void listarLibrosPorIdioma() {
+        var muestraIdioma = """
+                **************************************
+                    Lista de idiomas disponibles
+                **************************************
+                """;
+        var idiomasLibro = repositorioLibro.obtenerListaUnicaIdioma();
+        var idiomasJson = consumoAPI.consumoAPI(URL_CODIGOS_IDIOMAS);
+        var datosIdiomas = convierteDatos.obtenerDatos(idiomasJson, DatosIdioma.class);
+        //System.out.println(datosIdiomas);
+        List<Idioma> idiomaDisponibles = new ArrayList<>();
+        if (idiomasLibro.isEmpty()) {
+            System.out.println("No hay libros con ese idioma registrado");
+        } else {
+            for (String codigoIdioma : idiomasLibro) {
+                var idiomaEncontrado = datosIdiomas.idiomas().stream()
+                        .filter(i -> i.codigoIdioma().contains(codigoIdioma))
+                        .collect(Collectors.toList());
+                idiomaDisponibles.add(idiomaEncontrado.get(0));
+            }
+            System.out.println(muestraIdioma);
+            idiomaDisponibles.forEach(i -> System.out.println(i.codigoIdioma()
+                    + " - " + i.idioma()));
+            System.out.println("Ingrese el codigo del idioma del libro a buscar");
+            String inputCodigoIdioma = teclado.nextLine();
+            if (inputCodigoIdioma.isEmpty()) {
+                System.out.println("Ingrese un codigo de idioma");
+            } else {
+                libros = repositorioLibro.findByIdioma(inputCodigoIdioma);
+                if (libros.isEmpty()) {
+                    System.out.println("No hay libros con ese idioma registrado");
+                } else {
+                    var cuentaLibros = libros.size();
+                    datosLibro(libros);
+                    System.out.println("Total de libros registrados: " + cuentaLibros);
+                }
+
+            }
         }
     }
 
