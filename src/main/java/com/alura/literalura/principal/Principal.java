@@ -43,8 +43,10 @@ public class Principal {
                      3 - Listar autores registrados
                      4 - Listar autores vivos por X año
                      5 - Listar libros por idioma
-                     6 - Top 10 libros con más descargas
-                     7 - Algunas estadísticas
+                     6 - Algunas estadisticas
+                     7 - Top 10 libros mas descargados
+                     8 - Buscar autor por nombre
+                     9 - Listar autores por X idioma
                     
                      0 - Salir
                     """;
@@ -67,6 +69,8 @@ public class Principal {
                     listarAutoresVivosPorAnio();
                 case 5:
                     listarLibrosPorIdioma();
+                case 6:
+                    mostrarEstadisticas();
                 case 0:
                     System.out.println("Cerrando la aplicacion");
                     break;
@@ -297,6 +301,33 @@ public class Principal {
 
             }
         }
+    }
+
+    private void mostrarEstadisticas() {
+        libros = repositorioLibro.findAll();
+
+        var muestraEstadisticas = """
+                ***************************************
+                    Datos estadisticos de Literalura
+                ***************************************
+                
+                Total de librps: %s
+                Libro mas descargado: %s
+                Libro menos descargado: %s
+                Promedio de descargas: %s
+                
+                """;
+
+        LongSummaryStatistics estadisticas = libros.stream()
+                .filter(l -> l.getNumeroDescargas() > 0)
+                .collect(Collectors.summarizingLong(l -> l.getNumeroDescargas().longValue()));
+
+        System.out.println(muestraEstadisticas.formatted(
+                estadisticas.getCount(),
+                estadisticas.getMax(),
+                estadisticas.getMin(),
+                Math.round(estadisticas.getAverage())
+        ));
     }
 
 }
