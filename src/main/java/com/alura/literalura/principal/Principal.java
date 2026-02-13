@@ -24,7 +24,7 @@ public class Principal {
     private LibroRepository repositorioLibro;
     private AutorRepository repositorioAutor;
     private List<Libro> libros;
-    private List<Autor> listaAutor;
+    private List<Autor> autores;
 
     public Principal(LibroRepository repositorioLibro, AutorRepository repositorioAutor){
         this.repositorioLibro = repositorioLibro;
@@ -55,14 +55,14 @@ public class Principal {
 
             switch (opcion){
                 case 1:
-                    System.out.println("caso 1 ingresando");
                     buscarLibro();
                     break;
                 case 2:
-                    System.out.println("caso 2 ingresado");
                     listarLibros();
                     break;
-
+                case 3:
+                    listarAutoresRegistrados();
+                    break;
                 case 0:
                     System.out.println("Cerrando la aplicacion");
                     break;
@@ -152,7 +152,7 @@ public class Principal {
         }
     }
 
-    private void datosAutor(){
+    private void datosAutor(List<Autor> listaAutor){
         var muestraAutor = """
                 **************************************
                             Datos del autor
@@ -208,6 +208,23 @@ public class Principal {
             var cuentaLibros = libros.size();
             datosLibro(libros);
             System.out.println("Total de libros registrados: " + cuentaLibros);
+        }
+    }
+
+    private void listarAutoresRegistrados() {
+        var muestraListaAutores = """
+                **************************************
+                    Lista de autores en Literalura
+                **************************************
+                """;
+        System.out.print("\n" + muestraListaAutores + "\n");
+        autores = repositorioAutor.findAllByOrderByNombreAsc();
+        if (autores.isEmpty()) {
+            System.out.println("No hay autores registrados");
+        } else {
+            var cuentaAutores = autores.size();
+            datosAutor(autores);
+            System.out.println("Total de autores registrados: " + cuentaAutores);
         }
     }
 
