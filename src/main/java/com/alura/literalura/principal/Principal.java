@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 
 public class Principal {
@@ -21,6 +23,8 @@ public class Principal {
     private String nombreLibro;
     private LibroRepository repositorioLibro;
     private AutorRepository repositorioAutor;
+    private List<Libro> libros;
+    private List<Autor> listaAutor;
 
     public Principal(LibroRepository repositorioLibro, AutorRepository repositorioAutor){
         this.repositorioLibro = repositorioLibro;
@@ -53,9 +57,11 @@ public class Principal {
                 case 1:
                     System.out.println("caso 1 ingresando");
                     buscarLibro();
+                    break;
                 case 2:
                     System.out.println("caso 2 ingresado");
-                    //mostrarLibrosBuscados();
+                    listarLibros();
+                    break;
 
                 case 0:
                     System.out.println("Cerrando la aplicacion");
@@ -71,9 +77,9 @@ public class Principal {
         System.out.println("Ingresar nombre del libro: ");
         nombreLibro = teclado.nextLine();
         var json = consumoAPI.consumoAPI(URL_BASE + "?search=" + nombreLibro.replace(" ", "+"));
-        System.out.println(json);
+        //System.out.println(json);
         var datos = convierteDatos.obtenerDatos(json, DatosResultado.class);
-        System.out.println(datos);
+        //System.out.println(datos);
         return datos;
     }
 
@@ -85,8 +91,51 @@ public class Principal {
         if(libroBuscado.isPresent()){
             DatosLibro datosLibro = libroBuscado.get();
             System.out.println("Libro encontrado ");
-            System.out.println(datosLibro);
+            //System.out.println(datosLibro);
+            DatosAutor datosAutor = libroBuscado.get().autores().get(0);
+            System.out.println("------------" + libroBuscado.get().idLibro());
 
+            //validar si el libro ya esta en la base de datos
+            if(repositorioLibro.findByIdGutendex(libroBuscado.get().idLibro()).isPresent()){
+                System.out.println("Libro ya registrado en la base de datos");
+                System.out.println("------------" + libroBuscado.get().idLibro());
+            } else {
+                var libroEncontrado = """
+                        **************************************
+                                    Datos del Libro
+                        **************************************
+                        
+                        Titulo: %s
+                        Autor: %s
+                        Idiomas: %s
+                        Descargas: %s
+                        """;
+                System.out.printf(libroEncontrado + "%n",
+                        libroBuscado.get().titulo(),
+                        libroBuscado.get().autores().get(0).nombre(),
+                        libroBuscado.get().idiomas(),
+                        libroBuscado.get().descargas());
+
+                Optional<Autor> autor = repositorioAutor.findByNombre(datosAutor.nombre());
+                if(autor.isPresent()){
+                    System.out.println("Autor encontrado");
+                    Libro libro = new Libro(libroBuscado.get());
+                    libro.setAutor(autor.get());
+
+                } else {
+                    System.out.println("Autor no encontrado");
+                    libros = libroBuscado.stream()
+                            .map(Libro::new)
+                            .collect(Collectors.toList());
+                    Autor autorClase = new Autor(datosAutor);
+                    autorClase.setLibros(libros);
+                    repositorioAutor.save(autorClase);
+                }
+                System.out.println("Libro registradp exitosamente");
+
+            }
+
+            /*
             //crear autor
             DatosAutor datosAutor = datosLibro.autores().get(0);
             Autor autor = new Autor(datosAutor);
@@ -97,12 +146,69 @@ public class Principal {
             libro.setAutor(autor);
             repositorioLibro.save(libro);
 
-            System.out.println("Libro guardado en la base de datos");
+            System.out.println("Libro guardado en la base de datos");*/
         }else {
             System.out.println("Libro no encontrado");
         }
     }
-    private void mostrarLibrosBuscados(){
-        datosLibros.forEach(System.out::println);
+
+    private void datosAutor(){
+        var muestraAutor = """
+                **************************************
+                            Datos del autor
+                **************************************
+                
+                Nombre: %s
+                Año de nacimiento: %s
+                Año de fallecimiento: %s
+                """;
+        listaAutor.forEach(a -> System.out.printf(
+                (muestraAutor) + "%n", a.getNombre(),
+                (a.getAnioNacimiento() == null) ? "Sin datos" : a.getAnioNacimiento(),
+                (a.getAnioFallecimiento() == null) ? "Sin datos" : a.getAnioFallecimiento(),
+                repositorioLibro.obtenerLibrosPorAutor(a.getIdAutor()).stream()
+                        .map(Libro::getTitulo)
+                        .collect(Collectors.joining(", "))
+        ));
     }
+
+    private void datosLibro(List<Libro> listaLibro) {
+        var muestraLibro = """
+                **************************************
+                            Datos del Libro
+                **************************************
+                
+                Titulo: %s
+                Autor: %s
+                Idiomas: %s
+                Descargas: %s
+                
+                """;
+        listaLibro.forEach(l -> System.out.println(
+                muestraLibro.formatted(
+                        l.getTitulo(),
+                        l.getAutor().getNombre(),
+                        l.getIdioma(),
+                        l.getNumeroDescargas()
+                )
+        ));
+    }
+
+    private void listarLibros() {
+        libros = repositorioLibro.findAll();
+        var muestraListaLibros = """
+                ****************************************************
+                            Lista de libros en Literalura
+                ****************************************************       
+                """;
+        System.out.print("\n" + muestraListaLibros + "\n");
+        if (libros.isEmpty()) {
+            System.out.println("No hay libros registrados");
+        } else {
+            var cuentaLibros = libros.size();
+            datosLibro(libros);
+            System.out.println("Total de libros registrados: " + cuentaLibros);
+        }
+    }
+
 }

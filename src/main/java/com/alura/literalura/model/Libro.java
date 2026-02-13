@@ -12,6 +12,7 @@ public class Libro {
     private String titulo;
     private String idioma;
     private Long numeroDescargas;
+    private Long idGutendex;
 
     @ManyToOne
     private Autor autor;
@@ -20,6 +21,7 @@ public class Libro {
         this.titulo = datosLibro.titulo();
         this.idioma = datosLibro.idiomas().get(0);
         this.numeroDescargas = datosLibro.descargas();
+        this.idGutendex = datosLibro.idLibro();
     }
 
     public Libro() {
@@ -64,5 +66,13 @@ public class Libro {
 
     public void setAutor(Autor autor) {
         this.autor = autor;
+    }
+
+    public Long getIdGutendex() {
+        return idGutendex;
+    }
+
+    public void setIdGutendex(Long idGutendex) {
+        this.idGutendex = idGutendex;
     }
 }
