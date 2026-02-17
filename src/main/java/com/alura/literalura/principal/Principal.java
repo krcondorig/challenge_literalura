@@ -67,10 +67,22 @@ public class Principal {
                     break;
                 case 4:
                     listarAutoresVivosPorAnio();
+                    break;
                 case 5:
                     listarLibrosPorIdioma();
+                    break;
                 case 6:
                     mostrarEstadisticas();
+                    break;
+                case 7:
+                    listarTop10LibrosMasDescargados();
+                    break;
+                case 8:
+                    buscarAutorPorNombre();
+                    break;
+                case 9:
+                    System.out.println("caso 9");;
+                    break;
                 case 0:
                     System.out.println("Cerrando la aplicacion");
                     break;
@@ -328,6 +340,63 @@ public class Principal {
                 estadisticas.getMin(),
                 Math.round(estadisticas.getAverage())
         ));
+    }
+
+    private void listarTop10LibrosMasDescargados() {
+        libros = repositorioLibro.findTop10ByOrderByNumeroDescargasDesc();
+        if (libros.isEmpty()) {
+            System.out.println("No hay libros registrados");
+        } else {
+            var muestraTop10Libros = """
+                            ********************************************************
+                                        Top 10 libros más descargados
+                            ********************************************************
+                            
+                            """;
+            System.out.print(muestraTop10Libros);
+            var cuentaLibros = libros.size();
+            datosLibro(libros);
+            System.out.println("Total de libros registrados: " + cuentaLibros);
+        }
+    }
+
+    private void buscarAutorPorNombre(){
+        System.out.println("Ingrese el nombre del autor: ");
+        String nombreAutor = teclado.nextLine();
+
+        Optional<Autor> autor = repositorioAutor.findByNombre(nombreAutor);
+        
+        // Si no encuentra con búsqueda exacta, intentar búsqueda parcial
+        if (autor.isEmpty()) {
+            List<Autor> autores = repositorioAutor.findAll();
+            autor = autores.stream()
+                .filter(a -> a.getNombre().toLowerCase().contains(nombreAutor.toLowerCase()))
+                .findFirst();
+        }
+        
+        if (autor.isPresent()){
+            Autor autorEncontrado = autor.get();
+
+            var muestraAutor = """
+                    **************************************
+                                  Datos del autor
+                    **************************************
+                    
+                    Nombre: %s
+                    Año de nacimiento: %s
+                    Año de fallecimiento: %s
+                    """;
+            System.out.printf(muestraAutor + "%n",
+                autorEncontrado.getNombre(),
+                autorEncontrado.getAnioNacimiento() == null ? "Sin datos" : autorEncontrado.getAnioNacimiento(),
+                autorEncontrado.getAnioFallecimiento() == null ? "Sin datos" : autorEncontrado.getAnioFallecimiento());
+            libros = repositorioLibro.obtenerLibrosPorAutor(autorEncontrado.getIdAutor());
+            System.out.println("Libros registrados del autor: " + libros.size());
+            datosLibro(libros);
+        } else {
+            System.out.println("No se encontro el autor");
+        }
+
     }
 
 }
