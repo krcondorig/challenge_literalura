@@ -46,7 +46,8 @@ public class Principal {
                      6 - Algunas estadisticas
                      7 - Top 10 libros mas descargados
                      8 - Buscar autor por nombre
-                     9 - Listar autores por X idioma
+                     9 - Autores por rango de nacimiento
+                     10 - Autores mas longevos
                     
                      0 - Salir
                     """;
@@ -81,7 +82,10 @@ public class Principal {
                     buscarAutorPorNombre();
                     break;
                 case 9:
-                    System.out.println("caso 9");;
+                    autoresPorRangoNacimiento();
+                    break;
+                case 10:
+                    autoresMasLongevos();
                     break;
                 case 0:
                     System.out.println("Cerrando la aplicacion");
@@ -397,6 +401,75 @@ public class Principal {
             System.out.println("No se encontro el autor");
         }
 
+    }
+
+    private void autoresPorRangoNacimiento(){
+        try {
+            System.out.println("Ingrese el año de inicio:");
+            int anioInicio = teclado.nextInt();
+            System.out.println("Ingrese el año de fin:");
+            int anioFin = teclado.nextInt();
+            teclado.nextLine();
+            
+            if (anioInicio > anioFin) {
+                System.out.println("El año de inicio no puede ser mayor que el año de fin");
+                return;
+            }
+            
+            autores = repositorioAutor.findByAnioNacimientoBetween(anioInicio, anioFin);
+            
+            var muestraRango = """
+                *************************************************************
+                    Autores nacidos entre %s y %s en Literalura
+                *************************************************************
+                """;
+            System.out.printf((muestraRango) + "%n", anioInicio, anioFin);
+            
+            if (autores.isEmpty()) {
+                System.out.println("No hay autores registrados en ese rango de años");
+            } else {
+                datosAutor(autores);
+                System.out.println("Total de autores encontrados: " + autores.size());
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Debe ingresar años válidos (números enteros)");
+            teclado.nextLine();
+        }
+    }
+
+    private void autoresMasLongevos(){
+        autores = repositorioAutor.findAutoresMasLongevos();
+        
+        var muestraLongevos = """
+                *************************************************************
+                        Autores más longevos en Literalura
+                *************************************************************
+                """;
+        System.out.println(muestraLongevos);
+        
+        if (autores.isEmpty()) {
+            System.out.println("No hay autores con datos completos de nacimiento y fallecimiento");
+        } else {
+            var muestraAutorConEdad = """
+                    ----------------------------------------
+                    Nombre: %s
+                    Año de nacimiento: %s
+                    Año de fallecimiento: %s
+                    Edad: %s años
+                    """;
+            
+            autores.forEach(a -> {
+                int edad = a.getAnioFallecimiento() - a.getAnioNacimiento();
+                System.out.printf(muestraAutorConEdad + "%n",
+                    a.getNombre(),
+                    a.getAnioNacimiento(),
+                    a.getAnioFallecimiento(),
+                    edad
+                );
+            });
+            
+            System.out.println("Total de autores con edad calculada: " + autores.size());
+        }
     }
 
 }
