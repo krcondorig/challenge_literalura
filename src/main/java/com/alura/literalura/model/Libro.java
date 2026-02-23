@@ -19,7 +19,9 @@ public class Libro {
 
     public Libro(DatosLibro datosLibro) {
         this.titulo = datosLibro.titulo();
-        this.idioma = datosLibro.idiomas().get(0);
+        this.idioma = (datosLibro.idiomas() != null && !datosLibro.idiomas().isEmpty()) 
+            ? datosLibro.idiomas().get(0) 
+            : "desconocido";
         this.numeroDescargas = datosLibro.descargas();
         this.idGutendex = datosLibro.idLibro();
     }

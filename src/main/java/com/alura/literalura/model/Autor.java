@@ -14,10 +14,14 @@ public class Autor {
     private Integer anioNacimiento;
     private Integer anioFallecimiento;
 
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Libro> libros;
 
     public Autor(DatosAutor datosAutor) {
+        if (datosAutor == null) {
+            throw new IllegalArgumentException("DatosAutor no puede ser nulo");
+        }
+        
         this.nombre = datosAutor.nombre();
         this.anioNacimiento = datosAutor.anioNacimiento();
         this.anioFallecimiento = datosAutor.anioMuerte();
