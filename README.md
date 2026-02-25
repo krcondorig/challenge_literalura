@@ -63,7 +63,7 @@ Deberas agregar las siguientes variables de entorno para que la aplicacion pueda
     </tr>
     <tr>
         <td>DB_NAME</td>
-        <td>Nombre de la base de datos/td>
+        <td>Nombre de la base de datos</td>
     </tr>
     <tr>
         <td>DB_USER</td>
@@ -104,6 +104,8 @@ spring.jpa.hibernate.ddl-auto=update
 
 ### Menú Principal
 
+![menu](https://github.com/user-attachments/assets/2c0e05af-e39c-48c9-88ed-e5e6331e7fc9)
+
 La aplicación ofrece las siguientes opciones:
 
 1. **🔍 Buscar Libro por título** - Busca libros en Gutendex y los registra
@@ -119,5 +121,43 @@ La aplicación ofrece las siguientes opciones:
 11. **🚪 Salir** - Cierra la aplicación
 
 
+### Buscar Libro por titulo
 
+![opcion1](https://github.com/user-attachments/assets/6f3b38c8-ce66-440c-b4fb-874689bb4e7e)
+
+### Listar libros registrados
+
+![opcion2](https://github.com/user-attachments/assets/df0137cc-d641-41ae-bad2-0cb6835e6c05)
+
+### Listar autores registrados
+
+![opcion3](https://github.com/user-attachments/assets/a29a52c1-db27-4ff8-83fe-a93194f98ee1)
+
+### Listar autores vivos por X año
+
+![opcion4](https://github.com/user-attachments/assets/4292b478-0b78-4f7e-bf60-162a68264226)
+
+### Listar libros por idioma
+
+![opcion5](https://github.com/user-attachments/assets/f6c6b19b-6296-41a8-b1b9-cafa4affe8da)
+
+### Algunas estadisticas
+
+![opcion6](https://github.com/user-attachments/assets/aeca791e-aba4-46ee-83e2-284f6a700e04)
+
+### Top 10 libros mas descargados
+
+![opcion7](https://github.com/user-attachments/assets/c300590a-287b-4531-97ac-5e89c88b5509)
+
+### Buscar autor por nombre
+
+![opcion8](https://github.com/user-attachments/assets/d6d74f08-d933-49b8-8109-2de504826c8c)
+
+### Autores por rango de nacimiento
+
+![opcion9](https://github.com/user-attachments/assets/07407d7e-d17c-4be2-ae45-a1e1aec0f3fc)
+
+### Autores mas longevos
+
+![opcion10](https://github.com/user-attachments/assets/a41f0937-7740-4551-bc29-cea19053359a)
 
